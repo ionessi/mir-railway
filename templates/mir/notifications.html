@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block vapid_key %}<meta name="vapid-key" content="BAwxRrju1ZpUjH6ZdvnmEJu9Ofi_SaYXuT0SQI9IycmDhfQAk8k3dPfQXJdjYNMkkp4Htl9aI3dlEaj1ncYr760" />{% endblock %}
+
+{% block title %} МИР | ПОЛУЧАТЕЛИ УВЕДОМЛЕНИЙ {% endblock %}
+
+{% block scripts %}<script src="/static/common/js/register.js?r=1"></script>{% endblock %}
+
+{% block content %}
+<div class="w3-margin w3-center w3-text-indigo">получатели уведомлений</div>
+{% for subscription in subscriptions %}
+    <div class="w3-padding w3-white" style="margin-bottom: 24px; word-wrap: break-word">
+        {% for user in users %}
+            {% if subscription.user_id == user.id %}
+            <strong><small>имя: </small></strong><small>{{ user.name }}</small><br>
+            {% endif %}
+        {% endfor %}
+        <strong><small>browser: </small></strong><small>{{ subscription.browser }}</small><br>
+        <strong><small>user-agent: </small></strong><small>{{ subscription.user_agent }}</small><br>
+        <strong><small>дата: </small></strong><small>{{ subscription.date.strftime('%H:%M (%d.%m.%Y)') }}</small><br>
+    </div>
+{% endfor %}
+{% endblock %}

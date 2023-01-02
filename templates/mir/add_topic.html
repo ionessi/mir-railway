@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %} МИР | ДОБАВИТЬ РАЗДЕЛ {% endblock %}
+
+{% block content %}
+<form class="w3-padding" enctype="multipart/form-data" method="POST">
+    <input class="w3-input w3-white" style="width: 288px" type="text" name="title" placeholder="название раздела" required />
+    <button class="w3-margin-top w3-button w3-text-white w3-tiny w3-2021-desert-mist">ДОБАВИТЬ</button>
+</form>
+{% endblock %}

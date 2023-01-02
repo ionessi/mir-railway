@@ -1,0 +1,17 @@
+<div class="message-container w3-margin-top w3-padding w3-pale-red w3-hover-pale-yellow" onclick="if (event.target.tagName !== 'A') {document.location.href = '/mail/message/{{ message.id }}'}">
+    <div class="w3-margin-top" style="display: flex; justify-content: space-between">
+        <div>
+        {% for user in users %}
+            {% if message.sender == user.id %}
+            <strong class="w3-text-brown"><small>{{ user.name }}</small></strong> > 
+            {% endif %}
+        {% endfor %}
+        {% for user in users %}
+            {% if message.recipient == user.id %}
+            <strong class="w3-text-brown"><small>{{ user.name }}</small></strong>
+            {% endif %}
+        {% endfor %}
+        </div>
+        <strong class="w3-text-brown" style="line-height: 2.2; font-size: 10px">{{ message.date.strftime('%H:%M (%d.%m.%Y)') }}</strong>
+    </div>
+</div>

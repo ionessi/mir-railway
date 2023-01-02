@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %} ПОЧТА | ДОБАВИТЬ СООБЩЕНИЕ {% endblock %}
+
+{% block scripts %}<script src="/static/mail/js/add_file.js?r=1"></script>{% endblock %}
+
+{% block content %}
+<form class="w3-padding" action="/mail/add" enctype="multipart/form-data" method="POST">
+    <select name="recipient" class="w3-margin-bottom w3-input w3-white" style="width: 200px" required>
+        <option value="" selected disabled >выбрать</option>
+    {% for other_user in other_users %}
+        <option value="{{ other_user.id }}">{{ other_user.name }}</option>
+    {% endfor %}
+    </select>
+    <p><input class="w3-check w3-white" type="checkbox" name="title" checked="checked"> получить титл</p>
+    <p><input class="w3-check w3-white" type="checkbox" name="code"> отправить код (титлы отключить)</p>
+    <p id="info" class="w3-center w3-text-indigo"></p>
+    <textarea id="text" name="text" class="w3-input w3-white" style="resize: vertical" rows="7" placeholder="текст сообщения"></textarea>
+    <input id="file" style="display: none;" type="file" name="file" accept="" />
+    <input id="file_size" type="hidden" name="file_size" />
+    <button class="w3-margin-top w3-button w3-tiny w3-teal text-bold" onclick="send(event)">ОТПРАВИТЬ</button>
+    <button class="w3-margin-top w3-right w3-button w3-tiny w3-teal text-bold" onclick="addFile(event, 'file')">ФАЙЛ</button>
+</form>
+{% endblock %}

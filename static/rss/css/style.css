@@ -1,0 +1,82 @@
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #7b0099 #f7f7f7;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+
+mains {
+    height: 100px;
+    background-image: url(/static/get?path=images/favicon.png), url(/static/get?path=images/favicon.png);
+    background-size: 100px 100px;
+    background-clip: text;
+    background-position: left, right;
+    background-repeat: repeat-y;
+}
+
+header {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+}
+
+header a {
+    text-decoration: none;
+}
+
+header a:hover {
+    color: #f7f7f7;
+}
+
+header span {
+    /*margin-top: 5px;*/
+    cursor: pointer;
+}
+
+header span:hover {
+    color: #f7f7f7;
+}
+
+nav a {
+    /*text-decoration: none;*/
+}
+
+.w3-hover-text-blue-grey:visited {
+    color: #607d8b!important;
+}
+
+.message-container {
+    margin-bottom: 32px !important;
+    /*cursor: pointer;*/
+}
+
+textarea {
+    line-height: 1.7;
+}
+
+input[type = file] {
+    display: none;
+}
+
+.message {
+    margin: 0 0 10px 0!important;
+	word-wrap: break-word;
+	white-space: pre-wrap;
+}
+
+.write-comment {
+    margin-top: 20px;
+}
+

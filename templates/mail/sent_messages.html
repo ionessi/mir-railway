@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %} ПОЧТА | ОТПРАВЛЕННЫЕ СООБЩЕНИЯ {% endblock %}
+
+{% block content %}
+<p class="w3-center w3-text-indigo">отправленные</p>
+{% for message in sent_messages %}
+    {% if message.flag == True %}
+        {% include 'message_template.html' %}
+    {% else %}
+        {% include 'unread_message_template.html' %}
+    {% endif %}
+{% endfor %}
+<div class="w3-padding w3-center w3-text-indigo">
+{% if page > 1 %}
+    {% if page == 2 %}
+        <a class="w3-margin-right" href="/mail/sent/1">1</a> <a href="/mail/sent/1"><<<</a>
+    {% elif page > 2 %}
+        <a class="w3-margin-right" href="/mail/sent/1">1</a> <a href="/mail/sent/{{ page - 1 }}"><<<</a>
+    {% else %}
+        <a href="/mail/sent/1"><<<</a>
+    {% endif %}
+{% else %}
+    <<<
+{% endif %}
+ {{ page }} 
+
+{% if page < pages %}
+    <a href="/mail/sent/{{ page + 1 }}">>>></a> <a class="w3-margin-left" href="/mail/sent/{{ pages }}">{{ pages }}</a>
+{% else %}
+    >>>
+{% endif %}
+</div>
+{% endblock %}

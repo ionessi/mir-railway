@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %} МИР | СООБЩЕНИЯ {% endblock %}
+
+{% block content %}
+<p class="w3-center w3-text-indigo">
+    <span>сообщения </span>
+    <a class="w3-text-blue-gray w3-hover-text-dark-gray" href="javascript:onclick=showFilters('filters')"><span class="glyphicon glyphicon-filter"></span></a>
+    {{ tags_number }}
+</p>
+<form id="filters" class="w3-hide w3-padding" style="display: flex; justify-content: space-between; line-height: 2;" action="/messages/1" method="GET">
+    <div class="w3-text-indigo">пользователи</div>
+    {% for user_1 in users %}
+        {% if user_1.id in users_filters %}
+            <span class="w3-small w3-text-blue-gray w3-hover-text-dark-gray cursor" style="white-space:nowrap" onclick="enterTag(event)"><input class="w3-check w3-white" type="checkbox" name="users[]" value="{{ user_1.id }}" checked="checked" /> {{ user_1.name }} &nbsp</span>
+        {% else %}
+            <span class="w3-small w3-text-blue-gray w3-hover-text-dark-gray cursor" style="white-space:nowrap" onclick="enterTag(event)"><input class="w3-check w3-white" type="checkbox" name="users[]" value="{{ user_1.id }}" /> {{ user_1.name }} &nbsp</span>
+        {% endif %}
+    {% endfor %}
+    <div class="w3-margin-top w3-text-indigo">тэги</div>
+    {% for tag_1 in tags %}
+        {% if tag_1 in tags_filters %}
+            <span class="w3-small w3-text-blue-gray w3-hover-text-dark-gray cursor" style="white-space:nowrap" onclick="enterTag(event)"><input class="w3-check w3-white" type="checkbox" name="tags[]" value="{{ tag_1 }}" checked="checked" /> {{ tag_1 }} &nbsp</span>
+        {% else %}
+            <span class="w3-small w3-text-blue-gray w3-hover-text-dark-gray cursor" style="white-space:nowrap" onclick="enterTag(event)"><input class="w3-check w3-white" type="checkbox" name="tags[]" value="{{ tag_1 }}" /> {{ tag_1 }} &nbsp</span>
+        {% endif %}
+    {% endfor %}
+    <p><button class="w3-padding-small w3-button w3-tiny w3-2021-rust text-bold">ПОКАЗАТЬ</button></p>
+</form>
+<script>
+function showFilters(id) {
+    let x = document.getElementById(id);
+  
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+      
+    } else {
+        x.className = x.className.replace(" w3-show", "");
+    }
+}
+
+function enterTag(event) {
+    const check = event.target.children[0];
+    
+    if (event.target.tagName !== 'INPUT') {
+        check.checked = !check.checked;
+    }
+}
+</script>
+{% for message in messages %}
+    {% include 'message_template.html' %}
+{% endfor %}
+{% include 'pagination.html' %}
+{% include 'tags.html' %}
+{% endblock %}

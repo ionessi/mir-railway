@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %} МИР | {{ topic.title|upper }} {% endblock %}
+
+{% block content %}
+<p class="w3-padding"><i>раздел: {{ topic.title|lower }}</i></p>
+{% for message in messages %}
+    {% include 'message_template.html' %}
+{% endfor %}
+<div class="w3-padding w3-center">
+{% if page > 1 %}
+    {% if page == 2 %}
+        <a class="w3-margin-right" href="/topic/{{ topic.id }}/1">1</a> <a href="/topic/{{ topic.id }}/1"><<<</a>
+    {% elif page > 2 %}
+        <a class="w3-margin-right" href="/topic/{{ topic.id }}/1">1</a> <a href="/topic/{{ topic.id }}/{{ page - 1 }}"><<<</a>
+    {% else %}
+        <a href="/topic/{{ topic.id }}/1"><<<</a>
+    {% endif %}
+{% else %}
+    <<<
+{% endif %}
+ {{ page }} 
+
+{% if page < pages %}
+    <a href="/topic/{{ topic.id }}/{{ page + 1 }}">>>></a> <a class="w3-margin-left" href="/topic/{{ topic.id }}/{{ pages }}">{{ pages }}</a>
+{% else %}
+    >>>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="robots" content="noindex, nofollow" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+        <meta name="theme-color" content="#0072B5" />
+        {% block vapid_key %}{% endblock %}
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="icon" type="image/ico" href="/favicon.ico" />
+        <link rel="stylesheet" type="text/css" href="/static/common/css/glyphicons/glyphicons.css" />
+        <link rel="stylesheet" type="text/css" href="/static/common/css/w3.css" />
+        <link rel="stylesheet" type="text/css" href="/static/common/css/w3-colors-2021.css" />
+        <link rel="stylesheet" type="text/css" href="/static/common/css/style.css?r=1" />
+        <link rel="stylesheet" type="text/css" href="/static/mir/css/style.css?r=2" />
+        {% block scripts %}{% endblock %}
+    </head>
+    <body class="">
+        <header class="w3-container w3-margin-bottom w3-2021-french-blue">
+            <div class="w3-content">
+                <div style="display: flex; justify-content: space-between;">
+                    <a href="/"><span style="font-size: 22px;">МИР</span></a>
+                    <a style="margin-top: 6px; font-size: 16px" href="/messages/1"><span class="glyphicon glyphicon-list"></span></a>
+                    <a style="margin-top: 6px; font-size: 16px" href="/message/add"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <a style="margin-top: 5px; font-size: 18px;" href="/comments/1"><span class="glyphicon glyphicon-comment"></span></a>
+                    <a style="margin-top: 5px; font-size: 18px" href="/mail"><span class="glyphicon glyphicon-envelope"></span> <span class="w3-text-orange">{{ mail() }}</span></a>
+                </div>
+            </div>
+        </header>
+        <main class="w3-section">
+            <div class="w3-content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </body>
+</html>
+

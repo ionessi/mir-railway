@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %} МИР | ПОЛЬЗОВАТЕЛЬ {% endblock %}
+{% block content %}
+<div class="w3-margin w3-text-indigo" style="display: flex; justify-content: space-between; font-size: 16px">
+    <a style="margin-top: 6px;" href="/visitors/1"><span class="w3-hover-text-blue glyphicon glyphicon-user"></span></a>
+    <a style="margin-top: 7px;" href="/notifications"><span class="w3-hover-text-blue glyphicon glyphicon-bell"></span></a>
+    <a style="margin-top: 6px;" href="/geolocation"><span class="w3-hover-text-blue glyphicon glyphicon-map-marker"></span></a>
+    <a style="margin-top: 6px;" href="/rss/1"><span class="w3-hover-text-blue glyphicon glyphicon-globe"></span></a>
+    <a style="margin-top: 6px;" href="/links"><span class="w3-hover-text-blue glyphicon glyphicon-thumbs-up"></span></a>
+    <a style="margin-top: 3px; text-decoration: none;" href="/vpn"><span class="w3-hover-text-blue"><strong>VPN</strong></span></a>
+</div>
+<div class="w3-margin">
+    <p class="w3-text-indigo">пользователь</p>
+    <div>логин: {{ user.login }}</div>
+    <div>пароль: {{ user.password }}</div>
+    <div>имя: {{ user.name }}</div>
+    <div>зарегистрирован: <span class="w3-small">{{ user.date.strftime('%H:%M (%d.%m.%Y)') }}</span></div>
+    <p class="w3-text-indigo">другие пользователи</p>
+    {% for other_user in other_users %}
+    <p>
+        <div>имя: {{ other_user.name }}</div>
+        <div>зарегистрирован: <span class="w3-small">{{ other_user.date.strftime('%H:%M (%d.%m.%Y)') }}</span></div>
+    </p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+html, body {font-family: "Arial", sans-serif; font-size: 14px;}
+
+button {
+    letter-spacing: 1px;
+}
+
+.w3-check, .w3-radio {width: 17px; height: 17px; position: relative; top: 3px}
+
+.no-text-decoration {
+    text-decoration: none;
+}
+
+.cursor {
+    cursor: pointer;
+}
+
+.text-bold {
+    font-weight: 700;
+}
+
+.grey-color {
+    background-color: #f7f7f7;
+}

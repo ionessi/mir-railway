@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %} МИР | ДОБАВИТЬ КОММЕНТАРИЙ {% endblock %}
+
+{% block scripts %}<script src="/static/mir/js/script.js?r=1"></script>{% endblock %}
+
+{% block content %}
+<div class="w3-padding w3-white">
+    <div class="w3-margin-bottom" style="display: flex; justify-content: flex-end;">
+        {% for tag in message.tags %}
+            &nbsp<a class="w3-tiny w3-text-green w3-hover-text-blue text-bold no-text-decoration" href="/messages/1?tags[]={{ tag }}">{{ tag }}</a>
+        {% endfor %}
+    </div>
+    <div class="message">{{ message.text }}</div>
+    {% if message.file_name %}
+        {% if message.file_type in image %}
+            <div class="w3-margin-top w3-center">
+                <a href="/message/file/{{ message.id }}">
+                    <img src="/message/file/{{ message.id }}" width="100%" style="width: 100%; max-width: 420px"/>
+                </a>
+            </div>
+        {% elif message.file_type in audio %}
+            <audio src="/message/file/{{ message.id }}" controls style="margin: 8px 0 0 0; width:100%"></audio>
+		{% elif message.file_type in video %}
+			<div class="w3-margin-top w3-center"><video src="/message/file/{{ message.id }}" controls style="width: 100%; max-width: 420px"></video></div>
+        {% endif %}
+        <div class="w3-margin-top w3-center w3-small" style="word-wrap: break-word;">
+            {{ message.file_type }}<br>{{ message.file_size }} байт<br><a class="w3-text-indigo w3-hover-text-blue no-text-decoration" href="/message/file/{{ message.id }}" download="{{ message.file_name }}">{{ message.file_name }}</a>
+        </div>
+    {% endif %}
+    <div class="w3-margin-top w3-tiny w3-text-brown text-bold" style="display: flex; justify-content: space-between">
+        {% for user in users %}
+            {% if message.user_id == user.id %}
+            <span>{{ user.name }} &nbsp {{ message.date.strftime('%H:%M (%d.%m.%Y)') }}</span>
+            {% endif %}
+        {% endfor %}
+        {% if message.user_id == user._id %}
+        <a href="/message/remove/{{message.id }}"><span class="glyphicon glyphicon-trash"></span></a>
+        {% endif %}
+    </div>
+</div>
+<div id="add_comment" class="w3-margin-top w3-center w3-text-indigo">добавить комментарий</div>
+<form class="w3-margin-bottom w3-padding" action="/comment/add" enctype="multipart/form-data" method="POST">
+    <p><input class="w3-check w3-white" type="checkbox" name="title" checked="checked"> получить титл</p>
+    <p id="quote_info" class="w3-center w3-text-indigo"></p>
+    <p id="info" class="w3-center w3-text-indigo"></p>
+    <input id="quote" type="hidden" name="quote" />
+    <textarea id="text" name="text" class="w3-input" style="resize: vertical" rows="7" placeholder="текст комментария"></textarea>
+    <input id="file" style="display: none;" type="file" name="file" accept="" />
+    <input id="file_size" type="hidden" name="file_size" />
+    <input name="message_id" type="hidden" value="{{ message.id }}" />
+    <button class="w3-margin-top w3-button w3-tiny w3-2021-rust text-bold" onclick="sendComment(event)">ОТПРАВИТЬ</button>
+    <button class="w3-margin-top w3-right w3-button w3-tiny w3-2021-rust text-bold" onclick="addFile(event, 'file')">ФАЙЛ</button>
+</form>
+<div class="w3-margin w3-center w3-text-indigo">комментарии</div>
+{% for comment in comments %}
+<div id="{{ comment.id }}" class="message-container w3-padding w3-white">
+    <div class="w3-margin-bottom" style="display: flex; justify-content: flex-end;"><!-- justify-content: flex-end -->
+        {% for user in users %}
+            {% if comment.user_id == user.id %}
+            <span class="w3-text-brown glyphicon glyphicon-copy w3-small cursor" onclick="getQuote('{{ comment.id }}_text', '{{ user.name }}', `{{ comment.date.strftime('%H:%M (%d.%m.%Y)') }}`)"></span>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div id="{{ comment.id }}_text" class="message">{{ comment.text }}</div>
+    {% if comment.file_name %}
+        {% if comment.file_type in image %}
+            <div class="w3-margin-top w3-center">
+                <a href="/comment/file/{{ comment.id }}">
+                    <img src="/comment/file/{{ comment.id }}" width="100%" style="width: 100%; max-width: 420px"/>
+                </a>
+            </div>
+        {% elif comment.file_type in audio %}
+            <audio src="/comment/file/{{ comment.id }}" controls style="margin: 8px 0 0 0; width:100%"></audio>
+		{% elif comment.file_type in video %}
+			<div class="w3-margin-top w3-center"><video src="/comment/file/{{ comment.id }}" controls style="width: 100%; max-width: 420px"></video></div>
+        {% endif %}
+        <div class="w3-margin-top w3-center w3-small" style="word-wrap: break-word;">
+            {{ comment.file_type }}<br>{{ comment.file_size }} байт<br><a class="w3-text-indigo w3-hover-text-blue no-text-decoration" href="/comment/file/{{ comment.id }}" download="{{ comment.file_name }}">{{ comment.file_name }}</a>
+        </div>
+    {% endif %}
+    <div class="w3-margin-top w3-tiny w3-text-brown text-bold" style="display: flex; justify-content: space-between">
+        {% for user in users %}
+            {% if comment.user_id == user.id %}
+            <span>{{ user.name }} &nbsp {{ comment.date.strftime('%H:%M (%d.%m.%Y)') }}</span>
+            {% endif %}
+        {% endfor %}
+        {% if comment.user_id == user._id %}
+        <a href="/comment/remove/{{comment.id }}/{{ message.id }}"><span class="glyphicon glyphicon-trash"></span></a>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
