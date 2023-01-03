@@ -4,6 +4,7 @@ import sys
 import datetime
 import math
 
+import requests
 from asgiref.sync import async_to_sync
 #from bson.objectid import ObjectId
 
@@ -29,85 +30,36 @@ def add(environ):
     if environ['REQUEST_METHOD'] == 'POST':
         
         fields = read(environ)
-        
-        flag = False
-        
-        message_id = fields['message_id'].value
-        #text = default.get_link(fields['text'].value.strip())
-        
-        #environ.get('cursor').execute('SELECT id FROM messages WHERE id=%s', (message_id,))
-        #message = environ.get('cursor').fetchone()
-        
-        col = environ['DB']['messages']
-        message = col.find_one({'_id': ObjectId(message_id)}, {'_id'})
-        
-        if message:
-            if 'title' in fields:
-                text = async_to_sync(default.get_link)(fields['text'].value.strip())
-            else:
-                text = fields['text'].value.strip()
-                
-            text = fields['quote'].value + text
-                
-            #original_text = post['text'].value.strip()
-            date = datetime.datetime.now()
-            user = account.get(environ)
-            
-            if 'file' in fields:
-                if fields['file'].filename != '':
-                    flag = True
-                    file_name = fields['file'].filename
-                    file_type = fields['file'].type
-                    file_size = int(fields['file_size'].value)
-                    file_bin = fields['file'].value
-                    
-            col = environ['DB']['comments']
-            
-            if flag == False:
-                comment = {
-                    'text': text,
-                    'file_name': None,
-                    'file_size': None,
-                    'file_type': None,
-                    'file_bin': None,
-                    'date': date,
-                    'message_id': ObjectId(message_id),
-                    'user_id': user['_id']
-                }
-                
-                comment_id = str(col.insert_one(comment).inserted_id)
 
-                #environ.get('cursor').execute('INSERT INTO comments (text, date, message_id, user_id) VALUES (%s, %s, %s, %s) RETURNING id',
-                    #(text, date, message_id, user.id))
-            else:
-                comment = {
-                    'text': text,
-                    'file_name': file_name,
-                    'file_size': file_size,
-                    'file_type': file_type,
-                    'file_bin': file_bin,
-                    'date': date,
-                    'message_id': ObjectId(message_id),
-                    'user_id': user['_id']
-                }
-                
-                comment_id = str(col.insert_one(comment).inserted_id)
-                #environ.get('cursor').execute('INSERT INTO comments (text, file_name, file_size, file_type, file_bin, date, message_id, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id',
-                    #(text, file_name, file_size, file_type, file_bin, date, message_id, user.id))
-                            
-            #comment_id = environ.get('cursor').fetchone().id
-                            
-            #environ.get('conn').commit()
-                
-            async_to_sync(notifications.send)(environ, user, date.strftime('%H:%M (%d.%m.%Y)') + '\n комментарий от ' + user['name'], '/message/' + str(message_id)+ '?id=' + str(comment_id) + '#' + str(comment_id),)
+        message_id = fields['message_id'].value
+        
+        user = account.get(environ)
+
+        url = 'http://mirumir.infinityfreeapp.com' + environ['RAW_URI']
+        headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0'}
+        cookies = dict(__test='52b50e0de65515a3125cefdeaa677792', login=user['login'], password=user['password'])
+        data = {'message_id': fields['message_id'].value, 'quote': fields['quote'].value, 'text': fields['text'].value}
+        
+        if 'title' in fields:
+            data['title'] = fields['title'].value
+        
+        if fields['file'].filename != '':
+            data['file_size'] = fields['file_size'].value
+            files = {'file': (fields['file'].filename, fields['file'].value, fields['file'].type)}
             
-            response_headers = [
-                ('Location', '/message/' + message_id + '#' + str(comment_id)),
-            ]
+            res = requests.post(url, timeout=60, headers=headers, cookies=cookies, data=data, files=files, allow_redirects=False)
+            
         else:
-            response_headers = [
-                ('Location', '/message/' + message_id),
-            ]
+            res = requests.post(url, timeout=60, headers=headers, cookies=cookies, data=data, allow_redirects=False)
+
+        if res.encoding == 'ISO-8859-1':
+            res.encoding = 'utf-8'
+            
+        location = res.headers['Location']
+
+        response_headers = [
+            ('Location', location),
+        ]
         
         status = '303 See Other'
         content = b''
@@ -115,8 +67,6 @@ def add(environ):
     return status, response_headers, content
     
 def get(environ):
-    
-    #visitor.add(environ, '')
     
     if not account.get(environ):
         status = '303 See Other'
@@ -127,57 +77,21 @@ def get(environ):
         ]
         content = b''
     else:
-        #environ.get('cursor').execute('SELECT COUNT(id) FROM  comments')
-        #comments_number = environ.get('cursor').fetchone().count
+        user = account.get(environ)
+
+        url = 'http://mirumir.infinityfreeapp.com' + environ['RAW_URI']
+        headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0'}
+        cookies = dict(__test='52b50e0de65515a3125cefdeaa677792', login=user['login'], password=user['password'])
         
-        col = environ['DB']['comments']
-        x = col.find({}, {'_id'})
-        comments_number = 0
-        
-        for data in x:
-            comments_number += 1
-        
-        limit = 10
-        
-        pages = math.ceil(comments_number/limit)
-        
-        arr = environ.get('PATH_INFO').split('/')
-        page = int(arr[2])
-        offset = limit * (page - 1)
-        
-        #environ.get('cursor').execute('SELECT id, name FROM users')
-        #users = environ.get('cursor').fetchall()
-        
-        col = environ['DB']['users']
-        _users = col.find({}, {'_id', 'name'})
-        
-        users = []
-        
-        class User:
-            pass
+        res = requests.get(url, timeout=30, headers=headers, cookies=cookies, allow_redirects=False)
+
+        if res.encoding == 'ISO-8859-1':
+            res.encoding = 'utf-8'
             
-        for data in _users:
-            _user = User()
-            _user.id = data['_id']
-            _user.name = data['name']
-            users.append(_user)
-
-        #environ.get('cursor').execute('SELECT id, text, file_name, file_size, file_type, date, message_id, user_id FROM comments ORDER BY id DESC LIMIT %s OFFSET %s', (limit, offset,))
-        #comments = environ.get('cursor').fetchall()
-        
-        col = environ['DB']['comments']
-        _comments = col.find({}, {'_id', 'text', 'file_name', 'file_size', 'file_type', 'date', 'message_id', 'user_id'}).skip(offset).limit(limit).sort('_id', -1)
-        
-        comments = []
-        
-        for data in _comments:
-            data['id'] = data['_id']
-            comments.append(type('Class', (), data))
-
-        image, audio, video = default.get_mime_type_list()
+        content = (res.text).encode()
         
         status = '200 OK'
-        content = render('mir', 'comments.html', users=users, comments=comments, pages=pages, page=page, image=image, audio=audio, video=video)
+        #content = render('mir', 'comments.html', users=users, comments=comments, pages=pages, page=page, image=image, audio=audio, video=video)
         response_headers = [
             ('Content-Type', 'text/html'),
             ('Content-Length', str(len(content)))

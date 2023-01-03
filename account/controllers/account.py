@@ -19,9 +19,10 @@ def sign_in(environ):
         
         url = 'http://mirumir.infinityfreeapp.com/sign-in'
         headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0'}
-        cookies = dict(__test='52b50e0de65515a3125cefdeaa677792', login=login, password=password)
+        cookies = dict(__test='52b50e0de65515a3125cefdeaa677792')
+        data = {'login': login, 'password': password}
         
-        res = requests.get(url, timeout=30, headers=headers, cookies=cookies, allow_redirects=False)
+        res = requests.post(url, timeout=30, headers=headers, cookies=cookies, data=data, allow_redirects=False)
 
         if res.encoding == 'ISO-8859-1':
             res.encoding = 'utf-8'
@@ -48,8 +49,19 @@ def sign_in(environ):
         
     else:
 
+        url = 'http://mirumir.infinityfreeapp.com/sign-in'
+        headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0'}
+        cookies = dict(__test='52b50e0de65515a3125cefdeaa677792')
+        
+        res = requests.get(url, timeout=30, headers=headers, cookies=cookies, allow_redirects=False)
+
+        if res.encoding == 'ISO-8859-1':
+            res.encoding = 'utf-8'
+            
+        content = (res.text).encode()
+        
         status = '200 OK'
-        content = render('account', 'sign_in.html')
+        #content = render('account', 'sign_in.html')
         response_headers = [
             ('Content-Type', 'text/html'),
             ('Content-Length', str(len(content)))

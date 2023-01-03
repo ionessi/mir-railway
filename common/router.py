@@ -53,7 +53,7 @@ def routing(environ):
         if re.findall(r'^/static/\S+$', environ.get('PATH_INFO')):
             status, response_headers, content = static.get(environ.get('PATH_INFO'))
             
-        if re.findall(r'^/uploads/\S+$', environ.get('PATH_INFO')):
+        if re.findall(r'^/uploads/\S+/.+$', environ.get('PATH_INFO')):
             status, response_headers, content = uploads.get(environ)
                 
         elif environ['PATH_INFO'] == '/favicon.ico':

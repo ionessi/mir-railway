@@ -32,112 +32,54 @@ def add(environ):
     elif environ.get('REQUEST_METHOD') == 'POST':
         
         fields = read(environ)
+        
+        user = account.get(environ)
 
-        _tags = fields['tags'].value.strip()
-        
-        if _tags == '':
-            _tags = 'общение'
-        
-        _tags = _tags.lower().split(' ')
-        
-        tags = []
-        
-        for _tag in _tags:
-            tags.append(_tag.strip())
-        
-        #tags = json.dumps(sorted(tags))
-        tags = sorted(tags)
+        url = 'http://mirumir.infinityfreeapp.com' + environ['RAW_URI']
+        headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0'}
+        cookies = dict(__test='52b50e0de65515a3125cefdeaa677792', login=user['login'], password=user['password'])
+        data = {'tags': fields['tags'].value, 'text': fields['text'].value}
         
         if 'title' in fields:
-            text = async_to_sync(default.get_link)(fields['text'].value.strip())
+            data['title'] = fields['title'].value
+        
+        if fields['file'].filename != '':
+            data['file_size'] = fields['file_size'].value
+            files = {'file': (fields['file'].filename, fields['file'].value, fields['file'].type)}
+            
+            res = requests.post(url, timeout=60, headers=headers, cookies=cookies, data=data, files=files, allow_redirects=False)
+            
         else:
-            text = fields['text'].value.strip()
+            res = requests.post(url, timeout=60, headers=headers, cookies=cookies, data=data, allow_redirects=False)
+
+        if res.encoding == 'ISO-8859-1':
+            res.encoding = 'utf-8'
             
-        date = datetime.datetime.now()
-        user = account.get(environ)
-        
-        #print(user)
-        
-        flag = False
-        
-        if 'file' in fields:
-            if fields['file'].filename != '':
-                flag = True
-                file_name = fields['file'].filename
-                file_type = fields['file'].type
-                file_size = int(fields['file_size'].value)
-                file_bin = fields['file'].value
-                
-        col = environ['DB']['messages']
-                
-        if flag == False:
-            message = {
-                'tags': tags,
-                'text': text,
-                'file_name': None,
-                'file_size': None,
-                'file_type': None,
-                'file_bin': None,
-                'date': date,
-                'user_id': user['_id']
-            }
-            
-            message_id = str(col.insert_one(message).inserted_id)
-            
-            #environ.get('cursor').execute('INSERT INTO messages (tags, text, date, user_id) VALUES (%s, %s, %s, %s) RETURNING id',
-                #(tags, text, date, user.id))
-        else:
-            message = {
-                'tags': tags,
-                'text': text,
-                'file_name': file_name,
-                'file_size': file_size,
-                'file_type': file_type,
-                'file_bin': file_bin,
-                'date': date,
-                'user_id': user['_id']
-            }
-            
-            message_id = str(col.insert_one(message).inserted_id)
-            #environ.get('cursor').execute('INSERT INTO messages (tags, text, file_name, file_size, file_type, file_bin, date, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id',
-                #(tags, text, file_name, file_size, file_type, file_bin, date, user.id))
-                
-        #message_id = environ.get('cursor').fetchone().id
-        
-        #environ.get('conn').commit()
-        
-        async_to_sync(notifications.send)(environ, user, date.strftime('%H:%M (%d.%m.%Y)') + '\n сообщение от ' + user['name'], '/message/' + str(message_id))
+        location = res.headers['Location']
         
         status = '303 See Other'
         response_headers = [
-            ('Location', '/messages/1'),
+            ('Location', location),
         ]
         content = b''
         
     else:
     
-        #environ.get('cursor').execute('SELECT tags FROM messages')
-        #_tags = environ.get('cursor').fetchall()
+        user = account.get(environ)
+
+        url = 'http://mirumir.infinityfreeapp.com' + environ['RAW_URI']
+        headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0'}
+        cookies = dict(__test='52b50e0de65515a3125cefdeaa677792', login=user['login'], password=user['password'])
         
-        col = environ['DB']['messages']
-        _tags = col.find({}, {'tags'})
-        
-        tags = []
-        
-        for _tag in _tags:
-            #print(_tag['tags'])
-            ttt = _tag['tags']
+        res = requests.get(url, timeout=30, headers=headers, cookies=cookies, allow_redirects=False)
+
+        if res.encoding == 'ISO-8859-1':
+            res.encoding = 'utf-8'
             
-            for t in ttt:
-                if t not in tags:
-                    tags.append(t)
-            
-        tags = sorted(tags)
-        
-        print(tags)
+        content = (res.text).encode()
         
         status = '200 OK'
-        content = render('mir', 'add_message.html', tags=tags)
+        #content = render('mir', 'add_message.html', tags=tags)
         response_headers = [
             ('Content-Type', 'text/html'),
             ('Content-Length', str(len(content)))
@@ -146,8 +88,6 @@ def add(environ):
     return status, response_headers, content
     
 def get_all(environ):
-
-    #visitor.add(environ, '')
     
     if not account.get(environ):
         status = '303 See Other'
