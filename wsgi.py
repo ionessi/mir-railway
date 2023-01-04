@@ -23,5 +23,6 @@ def app(environ, start_response):
     
     yield content
     
+    
     #return iter([content])
 
