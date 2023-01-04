@@ -64,6 +64,9 @@ def routing(environ):
             #visitor.add(environ, '')
             #environ['PATH_INFO'] = '/static/common/robots.txt'
             status, response_headers, content = static.get(environ)
+            
+        elif environ['PATH_INFO'] == '/aes.js':
+            status, response_headers, content = static.get(environ)
     '''
     if content == b'empty':
         #environ['PATH_INFO'] = '/error'
