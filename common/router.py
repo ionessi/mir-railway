@@ -51,19 +51,19 @@ def routing(environ):
     if content == b'empty':
     
         if re.findall(r'^/static/\S+$', environ.get('PATH_INFO')):
-            status, response_headers, content = static.get(environ.get('PATH_INFO'))
+            status, response_headers, content = static.get(environ)
             
-        if re.findall(r'^/uploads/\S+/.+$', environ.get('PATH_INFO')):
+        elif re.findall(r'^/uploads/\S+/.+$', environ.get('PATH_INFO')):
             status, response_headers, content = uploads.get(environ)
                 
         elif environ['PATH_INFO'] == '/favicon.ico':
-            environ['PATH_INFO'] = '/static/mir/images/favicon.ico'
-            status, response_headers, content = static.get(environ['PATH_INFO'])
+            #environ['PATH_INFO'] = '/static/mir/images/favicon.ico'
+            status, response_headers, content = static.get(environ)
             
         elif environ['PATH_INFO'] == '/robots.txt':
-            visitor.add(environ, '')
-            environ['PATH_INFO'] = '/static/common/robots.txt'
-            status, response_headers, content = static.get(environ['PATH_INFO'])
+            #visitor.add(environ, '')
+            #environ['PATH_INFO'] = '/static/common/robots.txt'
+            status, response_headers, content = static.get(environ)
     '''
     if content == b'empty':
         #environ['PATH_INFO'] = '/error'
