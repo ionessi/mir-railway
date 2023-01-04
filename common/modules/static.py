@@ -13,7 +13,7 @@ def get(environ):
     status = '200 OK'
 
     response_headers = [
-        ('Cache-Control', res.headers['Cache-Control']),
+        ('Cache-Control', 'public, max-age=31536000'),
         ('Accept-Ranges', 'bytes'),
         ('Content-Type', res.headers['Content-Type']),
         ('Content-Length', str(len(content)))
